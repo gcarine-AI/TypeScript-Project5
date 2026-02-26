@@ -1,0 +1,1 @@
+{"version":3,"file":"transacaoAtualizar.d.ts","sourceRoot":"","sources":["../../src/interfaces/transacaoAtualizar.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,OAAO,WAAW,kBAAkB;IACvC,SAAS,EAAE,MAAM,CAAC;IAClB,KAAK,EAAE,MAAM,CAAC;IACd,IAAI,EAAE,SAAS,GAAG,SAAS,CAAC;IAC5B,SAAS,EAAE,MAAM,CAAC;IAClB,IAAI,EAAE,MAAM,CAAC;CAChB"}

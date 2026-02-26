@@ -1,3 +1,5 @@
+import type Transação from "../interfaces/transacao.js";
+
 
 
 import { getTransacoes, addTransacao, removeTransacao } from "../state/state.js"
@@ -7,28 +9,28 @@ import { updateTransacao } from "../state/state.js";
 
 
 
-   const CONTAINER = document.querySelector(".transacoes_historico");
+   const CONTAINER = document.querySelector<HTMLDivElement>(".transacoes_historico");
 
-   const balancoTotal = document.querySelector("#valor_balanco")
-   const rendaTotal = document.querySelector("#valor_renda")
-   const despesasTotal = document.querySelector("#valor_despesas")
-   const infoDespesas = document.querySelector("#info_despesas")
+   const balancoTotal = document.querySelector<HTMLDivElement>("#valor_balanco")
+   const rendaTotal = document.querySelector<HTMLDivElement>("#valor_renda")
+   const despesasTotal = document.querySelector<HTMLDivElement>("#valor_despesas")
+   const infoDespesas = document.querySelector<HTMLDivElement>("#info_despesas")
 
 
-   const form = document.querySelector(".form-container")
-   const descricaoInput = document.querySelector("#descricao")
-   const valorInput = document.querySelector("#quantidade")
-   const tipoSelect = document.querySelector("#tipo-transacao")
+   const form = document.querySelector<HTMLFormElement>(".form-container")
+   const descricaoInput = document.querySelector<HTMLInputElement>("#descricao")
+   const valorInput = document.querySelector<HTMLInputElement>("#quantidade")
+   const tipoSelect = document.querySelector<HTMLSelectElement>("#tipo-transacao")
 
-   const botaoAdicionar = document.querySelector(".adiciona-historia");
+   const botaoAdicionar = document.querySelector<HTMLButtonElement>(".adiciona-historia");
 
-    let idEdicao = null;
+    let idEdicao: string | null  = null;
 
-   export function renderLista() {
+   export function renderLista(): void {
+    if (!CONTAINER) return
 
-    const transacoes = getTransacoes();
+    const transacoes: Transação [] = getTransacoes();
 
-     
     CONTAINER.innerHTML = "";
 
     transacoes.forEach(transac => {
@@ -74,18 +76,36 @@ import { updateTransacao } from "../state/state.js";
     actualizarCards(transacoes)
    }
 
-   function carregarFormularioEdicao (transac) {
+   function carregarFormularioEdicao (transac: Transação) : void{
+
+    if (!descricaoInput) {
+        return 
+    }
+
+    if (!valorInput) {
+        return 
+    }
+
+    if (!tipoSelect) {
+        return
+    }
+
 
     descricaoInput.value = transac.descricao;
-    valorInput.value = transac.value;
+    valorInput.value = transac.valor.toString();
     tipoSelect.value = transac.tipo;
+
+   
 
     idEdicao = transac.id;
 
+    if (!botaoAdicionar) {
+        return
+    }
     botaoAdicionar.innerText = "Guardar alteração";
    }
 
-   function calcularVariacaoPercentual(atual, anterior) {
+   function calcularVariacaoPercentual(atual: number, anterior:number) {
     if (anterior === 0) return 0;
    
 
@@ -95,8 +115,21 @@ import { updateTransacao } from "../state/state.js";
 
 
 
-   export function actualizarCards (transacoes) {
+   export function actualizarCards (transacoes: Transação []): void {
     const saldo = calcularSaldo(transacoes);
+
+    if (!balancoTotal) {
+        return
+    }
+
+    if (!rendaTotal) {
+        return
+    }
+
+    if (!despesasTotal) {
+        return
+    }
+
     balancoTotal.innerText = formatarMoeda(saldo)
     rendaTotal.innerText = formatarMoeda(calcularReceitas(transacoes))
     despesasTotal.innerText = formatarMoeda(calcularDespesas(transacoes))
@@ -109,9 +142,11 @@ import { updateTransacao } from "../state/state.js";
         balancoTotal.classList.add("negativo")
     }
     
-   const despesasAtuais = calcularDespesas(transacoes);
+    const despesasAtuais = calcularDespesas(transacoes);
     const despesasAnteriores = 2000;
     const variacao = calcularVariacaoPercentual(despesasAtuais, despesasAnteriores);
+
+    if (!infoDespesas) return;
 
     if (variacao < 0) {
         infoDespesas.innerText = `${variacao.toFixed(1)}% redução`;
@@ -121,7 +156,9 @@ import { updateTransacao } from "../state/state.js";
 }
    
 
-   export function configurarFormulario() {
+   export function configurarFormulario(): void {
+    if (!botaoAdicionar) return;
+    if (!form) return;
       botaoAdicionar.addEventListener("click", adicionarTransacaoFormulario);
 
       form.addEventListener("submit", event => {
@@ -130,29 +167,27 @@ import { updateTransacao } from "../state/state.js";
     });
    }
 
-      function adicionarTransacaoFormulario() {
-
+      function adicionarTransacaoFormulario(){
+        if (!descricaoInput || !valorInput || !tipoSelect ) return;
+    
         const descricao = descricaoInput.value.trim();
         const valor = parseFloat(valorInput.value);
         const tipo = tipoSelect.value;
+           if (tipo !== "receita" && tipo !== "despesa") {
+            return;
+        }
+
         const categoria = getCategoriaSelecionada();
+
 
         if (!descricao || isNaN(valor) || valor < 0 || !categoria) {
             mostrarErroFormulario();
             return;
         }
 
-        const novaTransacao = {
-            id: Date.now(),
-            descricao,
-            valor,
-            tipo,
-            categoria: categoria|| "Outros",
-            data: new Date().toLocaleDateString("pt-PT", { day: '2-digit', month: '2-digit', year: 'numeric' })
-            
-        };
 
-        if (idEdicao) {
+        if (idEdicao !== null) {
+
 
             updateTransacao(idEdicao, {
                 descricao,
@@ -162,19 +197,35 @@ import { updateTransacao } from "../state/state.js";
                 data: new Date().toLocaleDateString("pt-PT")
             });
 
+        if (!botaoAdicionar) {
+            return
+        }
         idEdicao = null;
         botaoAdicionar.innerText = "Adicionar ao histórico";
+        } else {
+            const novaTransacao: Transação = {
+            id: Date.now().toString(),
+            descricao,
+            valor,
+            tipo,
+            categoria: categoria|| "Outros",
+            data: new Date().toLocaleDateString("pt-PT", { day: '2-digit', month: '2-digit', year: 'numeric' })
+            
+        };
+            addTransacao(novaTransacao);
+        }
 
-    }
 
 
-        addTransacao(novaTransacao)
+       // addTransacao(novaTransacao)
         limparFormulario()
         renderLista()
     }
 
-function mostrarErroFormulario() {
-    const form = document.querySelector(".nova-transacao");
+function mostrarErroFormulario(): void {
+    const form = document.querySelector<HTMLDivElement>(".nova-transacao");
+
+    if (!form) return
 
     form.classList.add("erro");
 
@@ -188,7 +239,8 @@ function mostrarErroFormulario() {
     
 }
 
-function limparFormulario() {
+function limparFormulario(): void {
+    if (!descricaoInput || !valorInput || !tipoSelect) return
     descricaoInput.value = "";
     valorInput.value = "";
     tipoSelect.value = "receita";
@@ -199,7 +251,7 @@ function limparFormulario() {
 
 
 
-function formatarMoeda(valor) {
+function formatarMoeda(valor: number) : string {
     return valor.toLocaleString("pt-PT", { style: "currency", currency: "EUR" });
 }
 

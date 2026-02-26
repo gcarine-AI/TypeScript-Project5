@@ -1,18 +1,18 @@
-
-
 import {save, read} from "../storage/storage.js"
+import type Transação from "../interfaces/transacao.js";
+import TransaçãoAtualizar from "../interfaces/transacaoAtualizar.js";
 
-let listaTransacoes = read();
+let listaTransacoes: Transação[] = read();
 
-function perservar () {
+function perservar (): void {
    return save(listaTransacoes)
 };
 
-export function getTransacoes () {
+export function getTransacoes (): Transação[] {
    return [...listaTransacoes]
 };
 
-export function addTransacao (novaTransacao) {
+export function addTransacao (novaTransacao: Transação) : void {
    if (!novaTransacao || typeof novaTransacao !== "object") {
     throw new Error("Transação inválida")
 }
@@ -21,13 +21,14 @@ export function addTransacao (novaTransacao) {
 
 };
 
-export function removeTransacao (id) {
+
+export function removeTransacao (id: string) : void {
    listaTransacoes = listaTransacoes.filter(transac => transac.id !== id)
    perservar()
 
 };
 
-export function updateTransacao (id, dadosAtualizados) {
+export function updateTransacao (id: string, dadosAtualizados: TransaçãoAtualizar) : void {
     listaTransacoes = listaTransacoes.map(transac =>
         transac.id === id ? { ...transac, ...dadosAtualizados } : transac
     )

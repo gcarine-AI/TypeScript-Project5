@@ -1,0 +1,1 @@
+{"version":3,"file":"transacao.d.ts","sourceRoot":"","sources":["../../src/interfaces/transacao.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,OAAO,WAAW,SAAS;IAC9B,EAAE,EAAE,MAAM,CAAC;IACX,SAAS,EAAE,MAAM,CAAC;IAClB,KAAK,EAAE,MAAM,CAAC;IACd,IAAI,EAAE,SAAS,GAAG,SAAS,CAAC;IAC5B,SAAS,EAAE,MAAM,CAAC;IAClB,IAAI,EAAE,MAAM,CAAC;CAChB"}
