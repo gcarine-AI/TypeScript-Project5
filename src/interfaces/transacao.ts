@@ -1,5 +1,5 @@
 export default interface Transação {
-    id: string;
+    id:string;
     descricao: string;
     valor: number;
     tipo: "receita" | "despesa";
